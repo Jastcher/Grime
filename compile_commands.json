@@ -1,0 +1,116 @@
+[
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/application.cpp.o -c /home/jastcher/Programming/c++/Grime/src/application.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/application.cpp",
+  "output": "CMakeFiles/Application.dir/src/application.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/camera.cpp.o -c /home/jastcher/Programming/c++/Grime/src/camera.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/camera.cpp",
+  "output": "CMakeFiles/Application.dir/src/camera.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/event/event.cpp.o -c /home/jastcher/Programming/c++/Grime/src/event/event.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/event/event.cpp",
+  "output": "CMakeFiles/Application.dir/src/event/event.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/frameBuffer.cpp.o -c /home/jastcher/Programming/c++/Grime/src/frameBuffer.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/frameBuffer.cpp",
+  "output": "CMakeFiles/Application.dir/src/frameBuffer.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/graphManager.cpp.o -c /home/jastcher/Programming/c++/Grime/src/graphManager.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/graphManager.cpp",
+  "output": "CMakeFiles/Application.dir/src/graphManager.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/main.cpp.o -c /home/jastcher/Programming/c++/Grime/src/main.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/main.cpp",
+  "output": "CMakeFiles/Application.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/mesh.cpp.o -c /home/jastcher/Programming/c++/Grime/src/mesh.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/mesh.cpp",
+  "output": "CMakeFiles/Application.dir/src/mesh.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/renderer.cpp.o -c /home/jastcher/Programming/c++/Grime/src/renderer.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/renderer.cpp",
+  "output": "CMakeFiles/Application.dir/src/renderer.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/shader.cpp.o -c /home/jastcher/Programming/c++/Grime/src/shader.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/shader.cpp",
+  "output": "CMakeFiles/Application.dir/src/shader.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/ui.cpp.o -c /home/jastcher/Programming/c++/Grime/src/ui.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/ui.cpp",
+  "output": "CMakeFiles/Application.dir/src/ui.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/src/window.cpp.o -c /home/jastcher/Programming/c++/Grime/src/window.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/src/window.cpp",
+  "output": "CMakeFiles/Application.dir/src/window.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/vendor/src/glad.cpp.o -c /home/jastcher/Programming/c++/Grime/vendor/src/glad.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/vendor/src/glad.cpp",
+  "output": "CMakeFiles/Application.dir/vendor/src/glad.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/vendor/src/imgui.cpp.o -c /home/jastcher/Programming/c++/Grime/vendor/src/imgui.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/vendor/src/imgui.cpp",
+  "output": "CMakeFiles/Application.dir/vendor/src/imgui.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/vendor/src/imgui_demo.cpp.o -c /home/jastcher/Programming/c++/Grime/vendor/src/imgui_demo.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/vendor/src/imgui_demo.cpp",
+  "output": "CMakeFiles/Application.dir/vendor/src/imgui_demo.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/vendor/src/imgui_draw.cpp.o -c /home/jastcher/Programming/c++/Grime/vendor/src/imgui_draw.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/vendor/src/imgui_draw.cpp",
+  "output": "CMakeFiles/Application.dir/vendor/src/imgui_draw.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/vendor/src/imgui_impl_glfw.cpp.o -c /home/jastcher/Programming/c++/Grime/vendor/src/imgui_impl_glfw.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/vendor/src/imgui_impl_glfw.cpp",
+  "output": "CMakeFiles/Application.dir/vendor/src/imgui_impl_glfw.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/vendor/src/imgui_impl_opengl3.cpp.o -c /home/jastcher/Programming/c++/Grime/vendor/src/imgui_impl_opengl3.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/vendor/src/imgui_impl_opengl3.cpp",
+  "output": "CMakeFiles/Application.dir/vendor/src/imgui_impl_opengl3.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/vendor/src/imgui_tables.cpp.o -c /home/jastcher/Programming/c++/Grime/vendor/src/imgui_tables.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/vendor/src/imgui_tables.cpp",
+  "output": "CMakeFiles/Application.dir/vendor/src/imgui_tables.cpp.o"
+},
+{
+  "directory": "/home/jastcher/Programming/c++/Grime/Build",
+  "command": "/usr/bin/clang++  -I/home/jastcher/Programming/c++/Grime/include -I/home/jastcher/Programming/c++/Grime/vendor/include -I/home/jastcher/Programming/c++/Grime/vendor/include/imgui -std=gnu++17 -Wall -Wextra -Wpedantic -g -o CMakeFiles/Application.dir/vendor/src/imgui_widgets.cpp.o -c /home/jastcher/Programming/c++/Grime/vendor/src/imgui_widgets.cpp",
+  "file": "/home/jastcher/Programming/c++/Grime/vendor/src/imgui_widgets.cpp",
+  "output": "CMakeFiles/Application.dir/vendor/src/imgui_widgets.cpp.o"
+}
+]

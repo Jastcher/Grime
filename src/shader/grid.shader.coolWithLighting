@@ -1,0 +1,64 @@
+#shader vertex
+#version 330 core
+
+uniform mat4 view;
+uniform mat4 proj;
+
+
+out vec3 nearPoint;
+
+// Grid position are in xy clipped space
+vec3 gridPlane[6] = vec3[](
+    vec3(1, 1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+    vec3(-1, -1, 0), vec3(1, 1, 0), vec3(1, -1, 0)
+);
+
+vec3 UnprojectPoint(float x, float y, mat4 view, mat4 projection) {
+    mat4 viewInv = inverse(view);
+    mat4 projInv = inverse(projection);
+    vec4 unprojectedPoint =  viewInv * projInv * vec4(x, y, 1.0, 1.0);
+    return unprojectedPoint.xyz / unprojectedPoint.w;
+}
+
+// normal vertice projection
+void main() {
+    vec3 p = gridPlane[gl_VertexID].xyz;
+    nearPoint = UnprojectPoint( p.x, p.y, view, proj).xyz; // unprojecting on the near plane
+    gl_Position = vec4(p, 1.0); // using directly the clipped coordinates}
+}
+
+
+#shader fragment
+#version 330 core
+
+uniform float gridSpacing;
+out vec4 FragColor;
+
+in vec3 nearPoint;
+
+vec4 grid(vec3 fragPos3D, float scale) {
+    // Calculate coordinates for the main grid
+    vec2 coord = fragPos3D.xy * scale;
+    
+    // Calculate coordinates for the subgrid
+    vec2 subgridCoord = fract(coord * 5.0);
+    
+    // Calculate line thickness for the main grid and subgrid
+    float mainGridThickness = 0.02;  // Adjust the thickness as needed
+    float subGridThickness = 0.01;   // Adjust the thickness as needed
+
+    // Determine if this fragment is on a subgrid line
+    bool isSubgridLine = any(lessThanEqual(subgridCoord, vec2(subGridThickness))) || 
+                         any(greaterThanEqual(subgridCoord, vec2(1.0 - subGridThickness)));
+
+    // Calculate the final line color
+    vec4 mainGridColor = vec4(0.2, 0.2, 0.2, 1.0 - min(length(coord), 1.0));
+    vec4 subGridColor = vec4(0.2, 0.2, 0.2, 1.0 - min(length(subgridCoord), 1.0));
+    vec4 finalColor = mix(mainGridColor, subGridColor, float(isSubgridLine));
+
+    return finalColor;
+}
+
+void main() {
+    gl_FragColor = grid(nearPoint, gridSpacing);
+}

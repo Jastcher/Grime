@@ -1,0 +1,3 @@
+/home/jastcher/Programming/c++/Grime/Build/CMakeFiles/Application.dir
+/home/jastcher/Programming/c++/Grime/Build/CMakeFiles/edit_cache.dir
+/home/jastcher/Programming/c++/Grime/Build/CMakeFiles/rebuild_cache.dir
