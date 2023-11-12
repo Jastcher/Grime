@@ -9,19 +9,20 @@
 #include <unordered_map>
 #include <iostream>
 
-class GraphManager {
+class GraphManager
+{
 
-public:
-    GraphManager();
-    ~GraphManager();
+  public:
+	GraphManager();
+	~GraphManager();
 
-    void AddGraph(Graph& graph);
-    void AddGrid(Graph& graph);
+	void AddGraph(Graph& graph);
+	void AddGrid(Graph& graph);
 
-    bool LoadGraphCVT(const char* path);
+	void UpdateNames();
 
-    std::vector<const char*> gridNames;
-    std::vector<const char*> graphNames;
-    std::vector<Graph> graphs;
-    std::vector<Graph> grid;
+	bool LoadGraphCVT(const char* path);
+
+	std::vector<Graph> graphs;
+	std::vector<const char*> graphNames;
 };

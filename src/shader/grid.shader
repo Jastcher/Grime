@@ -31,6 +31,14 @@ void main() {
 #version 330 core
 
 uniform float gridSpacing;
+uniform float parentGridSpacing;
+uniform float gridThickness;
+uniform float parentGridThickness;
+uniform float gridMix;
+
+//colors
+uniform vec3 color;
+
 out vec4 FragColor;
 
 in vec3 nearPoint;
@@ -42,12 +50,12 @@ vec4 grid(vec3 fragPos3D, float scale, float thickness) {
     float line = min(grid.x, grid.y);
     float minimumz = min(derivative.y, 1);
     float minimumx = min(derivative.x, 1);
-    vec4 color = vec4(0.2, 0.2, 0.2, 1.0 - min(line, 1.0));
+    vec4 color = vec4(color, 1.0 - min(line, 1.0));
     return color;
 }
 
 void main() {
-    gl_FragColor = mix(grid(nearPoint, gridSpacing, 1.0), grid(nearPoint, gridSpacing / 4, 2.0), 0.5);
+    gl_FragColor = mix(grid(nearPoint, gridSpacing, gridThickness), grid(nearPoint, gridSpacing / parentGridSpacing, parentGridThickness), gridMix);
     //gl_FragColor = grid(nearPoint, gridSpacing, 1.0) * grid(nearPoint, gridSpacing / 4, 5.0);
 
 }

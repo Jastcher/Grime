@@ -9,7 +9,6 @@ uniform vec3 Ycolor;
 
 out vec3 lineColor;
 
-// Grid position are in xy clipped space
 vec3 axisVertices[4] = vec3[](
     vec3(-1, 0, 0), vec3(1, 0, 0),
     vec3(0, -1, 0), vec3(0, 1, 0)

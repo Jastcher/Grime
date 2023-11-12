@@ -1,10 +1,15 @@
 #include "ui.h"
 #include "frameBuffer.h"
+#include "graph.h"
 #include "graphManager.h"
 #include "imgui.h"
 #include "pfd/portable-file-dialogs.h"
 #include "renderer.h"
 #include <string>
+
+#define DUMMYTEXT(x) \
+	ImGui::Text(x);  \
+	ImGui::Dummy(ImVec2(0.0f, 2.0f));
 
 static inline void StartFrame()
 {
@@ -114,20 +119,14 @@ static inline void Settings(Camera* camera, Renderer* renderer)
 	ImGui::Begin("Settings");
 	if(ImGui::TreeNode("Camera Settings"))
 	{
-
 		ImGui::Columns(2);
-		// ImGui::SetColumnWidth(0, 100);
 
 		ImGui::Dummy(ImVec2(0.0f, 1.0f));
 		ImGui::Text("Camera position");
-		ImGui::Dummy(ImVec2(0.0f, 2.0f));
-		ImGui::Text("FOV");
-		ImGui::Dummy(ImVec2(0.0f, 2.0f));
-		ImGui::Text("Scroll speed");
-		ImGui::Dummy(ImVec2(0.0f, 2.0f));
-		ImGui::Text("FOV transition duration");
-		ImGui::Dummy(ImVec2(0.0f, 2.0f));
-		ImGui::Text("FOV transition speed");
+		DUMMYTEXT("FOV");
+		DUMMYTEXT("Scroll speed");
+		DUMMYTEXT("FOV transition duration");
+		DUMMYTEXT("FOV transition speed");
 
 		ImGui::NextColumn();
 		ImGui::SetNextItemWidth(-1);
@@ -155,48 +154,69 @@ static inline void Settings(Camera* camera, Renderer* renderer)
 	if(ImGui::TreeNode("Grid Settings"))
 	{
 		ImGui::Columns(2);
+
 		ImGui::Dummy(ImVec2(0.0f, 1.0f));
-		ImGui::Text("Child grid spacing");
-		ImGui::InputFloat("##5", &renderer->gridSpacing);
+		DUMMYTEXT("Grid spacing");
+		DUMMYTEXT("Parent grid spacing");
+		DUMMYTEXT("Grid thickness");
+		DUMMYTEXT("Parent grid thickness");
+		DUMMYTEXT("Axis thickness");
+		DUMMYTEXT("Grid mix");
+		DUMMYTEXT("Grid color");
+		DUMMYTEXT("X axis color");
+		DUMMYTEXT("Y axis color");
+
+		ImGui::NextColumn();
+		ImGui::SetNextItemWidth(-1);
+		ImGui::DragFloat("##5", &renderer->gridSpacing, 0.01f);
+		ImGui::SetNextItemWidth(-1);
+		ImGui::DragFloat("##6", &renderer->parentGridSpacing, 1.0f);
+		ImGui::SetNextItemWidth(-1);
+		ImGui::DragFloat("##7", &renderer->gridThickness, 0.01f);
+		ImGui::SetNextItemWidth(-1);
+		ImGui::DragFloat("##8", &renderer->parentGridThickness, 0.01f);
+		ImGui::SetNextItemWidth(-1);
+		ImGui::DragFloat("##13", &renderer->axisThickness, 1.0f);
+		ImGui::SetNextItemWidth(-1);
+		ImGui::DragFloat("##9", &renderer->gridMix, 0.01f, 0.0f, 1.0f);
+
+		ImGui::SetNextItemWidth(-1);
+		ImGui::ColorEdit3("##10", glm::value_ptr(renderer->gridColor));
+		ImGui::SetNextItemWidth(-1);
+		ImGui::ColorEdit3("##11", glm::value_ptr(renderer->mainAxisXColor));
+		ImGui::SetNextItemWidth(-1);
+		ImGui::ColorEdit3("##12", glm::value_ptr(renderer->mainAxisYColor));
 		ImGui::TreePop();
 	}
 
 	ImGui::End();
 }
 
-static int gridHierarchySelected = -1;
 static int graphsHierarchySelected = -1;
 static inline void HierarchyWindow(GraphManager* graphManager)
 {
 	ImGui::Begin("Hierarchy");
 
-	if(graphManager->gridNames.size() > 0)
-	{
-		ImGui::Text("Grid Hierarchy");
-		if(ImGui::ListBox("##0",
-		                  &gridHierarchySelected,
-		                  graphManager->gridNames.data(),
-		                  graphManager->gridNames.size(),
-		                  graphManager->gridNames.size()))
-		{
-			graphsHierarchySelected = -1;
-		}
-	}
-
 	if(graphManager->graphNames.size() > 0)
 	{
-		ImGui::Text("Graphs Hierarchy");
+		ImGui::Text("Graph Hierarchy");
 		if(ImGui::ListBox("##1",
 		                  &graphsHierarchySelected,
 		                  graphManager->graphNames.data(),
 		                  graphManager->graphNames.size(),
 		                  graphManager->graphNames.size()))
-		{
-			gridHierarchySelected = -1;
-		}
+			;
 	}
 
 	if(ImGui::Button("Add graph"))
+	{
+
+		Graph newGraph("New graph");
+		graphManager->AddGraph(newGraph);
+	}
+
+	// temp
+	if(0)
 	{
 		auto dir =
 		    pfd::open_file("select folder containing two columns of data", "/home/jastcher/Programming/c++/Grime/res/")
@@ -215,17 +235,10 @@ static inline void PropertiesWindow(GraphManager* graphManager)
 {
 
 	ImGui::Begin("Properties");
-	if(gridHierarchySelected >= 0)
-	{
-		auto& graph = graphManager->grid[gridHierarchySelected];
-		ImGui::Text("%s", graph.name.c_str());
-		ImGui::ColorPicker3("Color", glm::value_ptr(graph.color));
-		ImGui::InputFloat("Thickness", &graph.thickness);
-	}
 	if(graphsHierarchySelected >= 0)
 	{
 		auto& graph = graphManager->graphs[graphsHierarchySelected];
-		ImGui::Text("%s", graph.name.c_str());
+		ImGui::InputText("Name", &graph.name[0], graph.name.size());
 		ImGui::ColorPicker3("Color", glm::value_ptr(graph.color));
 		ImGui::InputFloat("Thickness", &graph.thickness);
 
@@ -280,7 +293,7 @@ void UI::Update()
 
 	ImGui::SetNextWindowSize(ImVec2(window->GetWidth(), window->GetHeight()));
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
-	// ImGui::ShowDemoWindow();
+	ImGui::ShowDemoWindow();
 
 	MainWindow();
 	ViewportWindow(frameBuffer, camera, viewportFocused, viewportMouseX, viewportMouseY);
@@ -288,7 +301,6 @@ void UI::Update()
 	Settings(camera, renderer);
 	HierarchyWindow(graphManager);
 	PropertiesWindow(graphManager);
-	TestingWindow(renderer, camera);
 
 	RenderUI();
 }

@@ -14,57 +14,46 @@ Renderer::Renderer(Camera* cam) : camera(cam)
 	glGenVertexArrays(1, &lonelyVao);
 }
 
+void Renderer::RenderGraph(int x, int y)
+{
+	graphShader.Activate();
+	graphShader.SetVec2("resolution", glm::vec2(x, y));
+	graphShader.SetMat4("view", camera->GetView());
+	graphShader.SetMat4("proj", camera->GetProjection());
+	graphShader.SetFloat("zoom", camera->fov);
+
+	glBindVertexArray(lonelyVao);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
 void Renderer::RenderGrid()
 {
 	gridShader.Activate();
+
 	gridShader.SetMat4("view", camera->GetView());
 	gridShader.SetMat4("proj", camera->GetProjection());
+
 	gridShader.SetFloat("gridSpacing", 1 / gridSpacing);
+	gridShader.SetFloat("parentGridSpacing", parentGridSpacing);
+	gridShader.SetFloat("gridThickness", gridThickness);
+	gridShader.SetFloat("parentGridThickness", parentGridThickness);
+	gridShader.SetFloat("gridMix", gridMix);
+
+	gridShader.SetVec3("color", gridColor);
+
 	glBindVertexArray(lonelyVao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 void Renderer::RenderMainAxes()
 {
-
 	axisShader.Activate();
+
 	axisShader.SetMat4("view", camera->GetView());
 	axisShader.SetMat4("proj", camera->GetProjection());
-	axisShader.SetVec3("Xcolor", glm::vec3(0.8f, 0.1f, 0.1f));
-	axisShader.SetVec3("Ycolor", glm::vec3(0.1f, 0.8f, 0.1f));
+	axisShader.SetVec3("Xcolor", mainAxisXColor);
+	axisShader.SetVec3("Ycolor", mainAxisYColor);
+
+	glLineWidth(axisThickness);
+
 	glBindVertexArray(lonelyVao);
 	glDrawArrays(GL_LINES, 0, 4);
-}
-
-void Renderer::Render(const Mesh& mesh)
-{
-	mesh.Activate();
-	glDrawArrays(GL_LINE_STRIP, 0, mesh.size / 2);
-}
-
-void Renderer::Render(const Graph& graph)
-{
-	shader.Activate();
-	shader.SetVec3("color", graph.color);
-	shader.SetMat4("camera", camera->GetMatrix());
-	glLineWidth(graph.thickness);
-
-	Render(graph.mesh);
-}
-
-void Renderer::RenderInstance(const Graph& graph, const glm::vec2& offset, const glm::vec2& margin, unsigned int count)
-{
-	instanceShader.Activate();
-	instanceShader.SetVec2("offset", offset);
-	instanceShader.SetVec2("margin", margin);
-	instanceShader.SetVec3("color", graph.color);
-	instanceShader.SetMat4("camera", camera->GetMatrix());
-
-	glm::mat4 model = glm::mat4(1.0f);
-	instanceShader.SetMat4("model", model);
-
-	glLineWidth(graph.thickness);
-
-	graph.mesh.Activate();
-
-	glDrawArraysInstanced(GL_LINES, 0, 2, count);
 }

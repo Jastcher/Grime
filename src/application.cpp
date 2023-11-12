@@ -103,8 +103,10 @@ void Application::Run()
 
 		renderer->RenderMainAxes();
 
+		renderer->RenderGraph(camera->width, camera->height);
+
 		// render graphs
-		for(const auto& graph : graphManager->graphs) { renderer->Render(graph); }
+		// for(const auto& graph : graphManager->graphs) { renderer->Render(graph); }
 
 		frameBuffer->Unbind();
 

@@ -5,18 +5,18 @@
 #include "mesh.h"
 #include <string>
 
-struct Graph {
-    Graph(const std::string& _name, const glm::vec3& _color, const std::vector<float>& _data, float _thickness = 1.0f)
-        : name(_name), color(_color), data(_data), thickness(_thickness) {
+struct Graph
+{
+	Graph(const char* _name) : name(_name)
+	{
+		name.resize(16);
+		mesh.Set(data);
+	}
 
-        mesh.Set(_data);
-    }
-
-    std::string name;
-	glm::vec3 color;
-	std::vector<float> data;
+	std::string name;
+	glm::vec3 color = glm::vec3(1.0f);
+	std::vector<float> data {};
 	float thickness = 1.0f;
 
 	Mesh mesh;
-
 };
