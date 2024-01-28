@@ -1,10 +1,10 @@
 #include "event.h"
 
-Dispatcher::Dispatcher(SlotType&& slot)
-    : observer(slot) {}
-
-
-void Dispatcher::Post( const Event& event ) const
+Dispatcher::Dispatcher(SlotType&& slot) : observer(slot)
 {
-    observer(event);
+}
+
+void Dispatcher::Post(const Event& event) const
+{
+	observer(event);
 }

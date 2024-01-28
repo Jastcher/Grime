@@ -10,7 +10,8 @@ project(Application VERSION 1.0)
 
 file(GLOB_RECURSE SRC_FILES src/*.cpp vendor/src/*.cpp)
 
-add_compile_options(-Wall -Wextra -Wpedantic -g)
+
+add_compile_options(-Wall -Wextra -Wpedantic -g -pg)
 add_executable(Application ${SRC_FILES})
 target_include_directories(Application PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/vendor/include ${CMAKE_CURRENT_SOURCE_DIR}/vendor/include/imgui)
 TARGET_LINK_LIBRARIES(Application ${CMAKE_CURRENT_SOURCE_DIR}/vendor/lib/libglfw3.a X11 GL)

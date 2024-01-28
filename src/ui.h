@@ -1,35 +1,47 @@
 
 #include "frameBuffer.h"
 #include "renderer.h"
+#include <functional>
 #include <vector>
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_stdlib.h"
+#include "ui_styles.h"
+
 #include "GLFW/glfw3.h"
+
 #include "window.h"
 #include "graphManager.h"
+
 #include "pfd/portable-file-dialogs.h"
+#include <unordered_map>
 
+class UI
+{
 
-class UI {
+  public:
+	UI(std::shared_ptr<Renderer> _renderer,
+	   std::shared_ptr<GraphManager> graphManager,
+	   std::shared_ptr<Window> _window,
+	   std::shared_ptr<FrameBuffer> _frameBuffer,
+	   std::shared_ptr<Camera> camera);
 
-public:
+	~UI();
 
-    UI(Renderer* _renderer, GraphManager* graphManager, Window* _window, FrameBuffer* _frameBuffer, Camera* camera);
-    ~UI();
+	void Update();
 
-    void Update();
+	bool viewportFocused;
+	int viewportMouseX, viewportMouseY;
 
-
-    bool viewportFocused;
-    int viewportMouseX, viewportMouseY;
-
-
-private:
-
-    Renderer* renderer;
-    GraphManager* graphManager;
-    Window* window;
-    FrameBuffer* frameBuffer;
-    Camera* camera;
+	void (*(styleFunctions[5]))() { CleanDarkRed, Moonlight, VisualStudio, Unreal, DeepDark };
+	const char* styleNames[5] { "Clean dark red", "Moonlight", "Visual Studio", "Unreal", "Deep Dark" };
+	ImFont* pFont;
+	std::unordered_map<std::string, void (*)(void)> styles;
+	std::shared_ptr<Renderer> renderer;
+	std::shared_ptr<GraphManager> graphManager;
+	std::shared_ptr<Window> window;
+	std::shared_ptr<FrameBuffer> frameBuffer;
+	std::shared_ptr<Camera> camera;
 };

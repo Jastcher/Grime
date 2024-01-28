@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "graph.h"
 #include <cmath>
 
 template<class T> std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
@@ -9,22 +10,21 @@ template<class T> std::ostream& operator<<(std::ostream& os, const std::vector<T
 	return os;
 }
 
-Renderer::Renderer(Camera* cam) : camera(cam)
+Renderer::Renderer(std::shared_ptr<Camera> cam) : camera(cam)
 {
 	glGenVertexArrays(1, &lonelyVao);
 }
 
-void Renderer::RenderGraph(int x, int y)
+void Renderer::Render(const Graph& graph)
 {
-	graphShader.Activate();
-	graphShader.SetVec2("resolution", glm::vec2(x, y));
-	graphShader.SetMat4("view", camera->GetView());
-	graphShader.SetMat4("proj", camera->GetProjection());
-	graphShader.SetFloat("zoom", camera->fov);
+	shader.Activate();
+	shader.SetMat4("camera", camera->GetMatrix());
+	shader.SetVec3("color", graph.color);
 
-	glBindVertexArray(lonelyVao);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	graph.mesh.Activate();
+	glDrawArrays(GL_LINE_STRIP, 0, graph.mesh.size / 2);
 }
+
 void Renderer::RenderGrid()
 {
 	gridShader.Activate();

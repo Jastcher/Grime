@@ -1,8 +1,6 @@
 #pragma once
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
 #include "window.h"
-#include <iostream>
+#include <memory>
 
 class FrameBuffer
 {
@@ -14,7 +12,7 @@ class FrameBuffer
 	int oldWidth;
 	int oldHeight;
 
-	FrameBuffer(Window* window);
+	FrameBuffer(std::shared_ptr<Window> window);
 	void Resize(int width, int height);
 	void SetSize(int width, int height);
 

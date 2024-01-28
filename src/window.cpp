@@ -50,7 +50,7 @@ bool Window::Init()
 	return 1;
 }
 
-Window::Window(const Props& p, Dispatcher* disp)
+Window::Window(const Props& p, std::shared_ptr<Dispatcher> disp)
 {
 	properties.width = p.width;
 	properties.height = p.height;

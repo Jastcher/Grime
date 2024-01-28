@@ -1,5 +1,6 @@
 #pragma once
-#include <iostream>
+// #include <iostream>
+#include <memory>
 
 #include "camera.h"
 #include "event/event.h"
@@ -9,26 +10,28 @@
 #include "ui.h"
 #include "window.h"
 
-class Application {
+class Application
+{
 
-public:
-  Application(const Props &winProps);
-  ~Application();
+  public:
+	Application(const Props& winProps);
+	~Application();
 
-  void Run();
+	void Run();
 
-private:
-  static Application *instance;
-  GLFWwindow *glfwWindow;
-  Window *window;
-  Camera *camera;
-  GraphManager *graphManager;
+  private:
+	static Application* instance;
+	GLFWwindow* glfwWindow;
 
-  Renderer *renderer;
-  FrameBuffer *frameBuffer;
-  UI *ui;
+	std::shared_ptr<Window> window;
+	std::shared_ptr<Camera> camera;
+	std::shared_ptr<GraphManager> graphManager;
 
-  // event
-  Dispatcher *dispatcher;
-  void HandleEvent(const Event &e);
+	std::shared_ptr<Renderer> renderer;
+	std::shared_ptr<FrameBuffer> frameBuffer;
+	std::shared_ptr<UI> ui;
+
+	// event
+	std::shared_ptr<Dispatcher> dispatcher;
+	void HandleEvent(const Event& e);
 };

@@ -19,7 +19,6 @@ void operator delete(void* memory)
 
 int main()
 {
-
 	Application* app = new Application({ 1, 1, "Grime" });
 
 	app->Run();

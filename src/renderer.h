@@ -5,16 +5,17 @@
 #include "graph.h"
 #include "mesh.h"
 #include "shader.h"
+#include <memory>
 
 class Renderer
 {
   public:
-	Renderer(Camera* camera);
+	Renderer(std::shared_ptr<Camera> camera);
 
 	void Render();
+	void Render(const Graph& graph);
 	void RenderGrid();
 	void RenderMainAxes();
-	void RenderGraph(int, int);
 
 	// grid
 	float gridSpacing = 0.1f;
@@ -34,7 +35,7 @@ class Renderer
 	GLuint lonelyVao;
 
   private:
-	Camera* camera;
+	std::shared_ptr<Camera> camera;
 
 	Shader shader = Shader("/home/jastcher/Programming/c++/Grime/src/shader/default.shader");
 	Shader instanceShader = Shader("/home/jastcher/Programming/c++/Grime/src/shader/instance.shader");

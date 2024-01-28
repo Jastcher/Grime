@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "frameBuffer.h"
+#include "glm/common.hpp"
 #include "graph.h"
 #include "graphManager.h"
 #include "imgui.h"
@@ -24,7 +25,11 @@ static inline void RenderUI()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-UI::UI(Renderer* _renderer, GraphManager* _graphManager, Window* _window, FrameBuffer* _frameBuffer, Camera* _camera)
+UI::UI(std::shared_ptr<Renderer> _renderer,
+       std::shared_ptr<GraphManager> _graphManager,
+       std::shared_ptr<Window> _window,
+       std::shared_ptr<FrameBuffer> _frameBuffer,
+       std::shared_ptr<Camera> _camera)
     : renderer(_renderer), graphManager(_graphManager), window(_window), frameBuffer(_frameBuffer), camera(_camera)
 {
 
@@ -39,6 +44,8 @@ UI::UI(Renderer* _renderer, GraphManager* _graphManager, Window* _window, FrameB
 
 	ImGui_ImplGlfw_InitForOpenGL(window->window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
+
+	styleFunctions[1]();
 }
 
 UI::~UI()
@@ -72,39 +79,43 @@ static inline void MainWindow()
 	ImGui::End();
 }
 
-static inline void ViewportWindow(
-    FrameBuffer* frameBuffer, Camera* camera, bool& viewportFocused, int& viewportMouseX, int& viewportMouseY)
+static inline void ViewportWindow(UI* UI)
 {
 	ImGui::Begin("Viewport");
 	float viewportWidth = ImGui::GetWindowWidth();
 	float viewportHeight = ImGui::GetWindowHeight();
-	camera->width = viewportWidth;
-	camera->height = viewportHeight;
+	UI->camera->width = viewportWidth;
+	UI->camera->height = viewportHeight;
 
 	// Swap the y-coordinates in the ImVec2 to avoid rendering the framebuffer upside down
 	ImGui::GetWindowDrawList()->AddImage(
-	    (unsigned int*)frameBuffer->textureColorbuffer,
+	    (unsigned int*)UI->frameBuffer->textureColorbuffer,
 	    ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y),
 	    ImVec2(ImGui::GetCursorScreenPos().x + viewportWidth, ImGui::GetCursorScreenPos().y + viewportHeight),
+
 	    ImVec2(0, 1),
 	    ImVec2(1, 0));
 
-	viewportFocused = ImGui::IsWindowFocused();
+	UI->viewportFocused = ImGui::IsWindowHovered();
 
 	ImVec2 mousePos = ImGui::GetMousePos();
-	viewportMouseX = mousePos.x - ImGui::GetCursorScreenPos().x - ImGui::GetScrollX();
-	viewportMouseY = mousePos.y - ImGui::GetCursorScreenPos().y - ImGui::GetScrollY();
+	UI->viewportMouseX = mousePos.x - ImGui::GetCursorScreenPos().x - ImGui::GetScrollX();
+	UI->viewportMouseY = mousePos.y - ImGui::GetCursorScreenPos().y - ImGui::GetScrollY();
 	// std::cout << viewportMouseX << " " << viewportMouseY << std::endl;
 
 	ImGui::End();
 }
 
-static inline void InfoWindow(Window* window, Camera* camera, bool viewportFocused, Renderer* renderer)
+static inline void InfoWindow(UI* UI)
 {
+	auto* camera = UI->camera.get();
+	auto* window = UI->window.get();
+
 	ImGui::Begin("Info");
+	ImGui::Text("Camera bounds %f ; %f", camera->leftBound, camera->rightBound);
 	ImGui::Text("Window size: %d x %d", window->GetWidth(), window->GetHeight());
 	ImGui::Text("Camera size: %d x %d", camera->width, camera->height);
-	if(viewportFocused) { ImGui::Text("Viewport window is focused"); }
+	if(UI->viewportFocused) { ImGui::Text("Viewport window is focused"); }
 	ImGui::Text("Mouse pos: %f x %f", window->mouseX, window->mouseY);
 	ImGui::Text("Camera Last mouse pos: %f x %f", camera->lastcamX, camera->lastcamY);
 	// ImGui::InputFloat("Grid Spacing", &renderer->gridSpacing);
@@ -114,15 +125,20 @@ static inline void InfoWindow(Window* window, Camera* camera, bool viewportFocus
 	ImGui::End();
 }
 
-static inline void Settings(Camera* camera, Renderer* renderer)
+static int themeSelected = 0;
+static inline void Settings(UI* UI)
 {
+	auto* camera = UI->camera.get();
+	auto* renderer = UI->renderer.get();
+	auto* graphManager = UI->graphManager.get();
+
 	ImGui::Begin("Settings");
 	if(ImGui::TreeNode("Camera Settings"))
 	{
 		ImGui::Columns(2);
 
 		ImGui::Dummy(ImVec2(0.0f, 1.0f));
-		ImGui::Text("Camera position");
+		DUMMYTEXT("Camera position");
 		DUMMYTEXT("FOV");
 		DUMMYTEXT("Scroll speed");
 		DUMMYTEXT("FOV transition duration");
@@ -187,32 +203,65 @@ static inline void Settings(Camera* camera, Renderer* renderer)
 		ImGui::SetNextItemWidth(-1);
 		ImGui::ColorEdit3("##12", glm::value_ptr(renderer->mainAxisYColor));
 		ImGui::TreePop();
+		ImGui::Columns(1);
 	}
 
+	ImGui::Separator();
+	if(ImGui::TreeNode("Graph Settings"))
+	{
+		ImGui::Columns(2);
+		ImGui::Dummy(ImVec2(0.0f, 1.0f));
+		DUMMYTEXT("Increment");
+
+		ImGui::NextColumn();
+		ImGui::SetNextItemWidth(-1);
+		if(ImGui::DragFloat("##13", &graphManager->increment, 0.001f, 0.01f))
+		{
+			graphManager->increment = glm::max(graphManager->increment, 0.01f);
+
+			graphManager->UpdateAllGraphVertices(camera->leftBound, camera->rightBound, true);
+		}
+
+		ImGui::TreePop();
+		ImGui::Columns(1);
+	}
+
+	ImGui::Separator();
+
+	if(ImGui::TreeNode("UI settings"))
+	{
+		ImGui::Text("Themes");
+		if(ImGui::ListBox("##14", &themeSelected, UI->styleNames, 5)) { UI->styleFunctions[themeSelected](); }
+		ImGui::TreePop();
+		ImGui::Columns(1);
+	}
 	ImGui::End();
 }
 
 static int graphsHierarchySelected = -1;
-static inline void HierarchyWindow(GraphManager* graphManager)
+static inline void HierarchyWindow(UI* UI)
 {
+	auto* graphManager = UI->graphManager.get();
+
 	ImGui::Begin("Hierarchy");
+
+	if(ImGui::Button("Add New Graph", ImVec2(-1.0f, 40.0f)))
+	{
+		Graph* newGraph = new Graph("New graph");
+		graphManager->AddGraph(newGraph);
+	}
+	ImGui::Separator();
 
 	if(graphManager->graphNames.size() > 0)
 	{
-		ImGui::Text("Graph Hierarchy");
-		if(ImGui::ListBox("##1",
-		                  &graphsHierarchySelected,
-		                  graphManager->graphNames.data(),
-		                  graphManager->graphNames.size(),
-		                  graphManager->graphNames.size()))
-			;
-	}
-
-	if(ImGui::Button("Add graph"))
-	{
-
-		Graph newGraph("New graph");
-		graphManager->AddGraph(newGraph);
+		for(size_t i = 0; i < graphManager->graphs.size(); i++)
+		{
+			if(ImGui::Selectable((graphManager->graphs[i]->name + "##" + std::to_string(i)).c_str(),
+			                     i == graphsHierarchySelected))
+			{
+				graphsHierarchySelected = i;
+			}
+		}
 	}
 
 	// temp
@@ -224,27 +273,64 @@ static inline void HierarchyWindow(GraphManager* graphManager)
 		std::cout << "opening file: ";
 		for(auto& i : dir) { std::cout << i; }
 		std::cout << std::endl;
-		bool a = graphManager->LoadGraphCVT(dir[0].c_str());
+		graphManager->LoadGraphCVT(dir[0].c_str());
 		std::cout << "LOADED" << std::endl;
 	}
 
 	ImGui::End();
 }
 
-static inline void PropertiesWindow(GraphManager* graphManager)
+static inline void PropertiesWindow(UI* UI)
 {
+	auto* camera = UI->camera.get();
+	auto* graphManager = UI->graphManager.get();
 
 	ImGui::Begin("Properties");
 	if(graphsHierarchySelected >= 0)
 	{
-		auto& graph = graphManager->graphs[graphsHierarchySelected];
-		ImGui::InputText("Name", &graph.name[0], graph.name.size());
-		ImGui::ColorPicker3("Color", glm::value_ptr(graph.color));
-		ImGui::InputFloat("Thickness", &graph.thickness);
+		auto& graph = *graphManager->graphs[graphsHierarchySelected];
 
-		std::cout << std::endl;
-		for(auto& i : graphManager->graphs[graphsHierarchySelected].data) { std::cout << i << std::endl; }
+		ImGui::Text("Name");
+		ImGui::InputText("##prop0", &graph.name);
 
+		ImGui::Separator();
+		ImGui::Text("Color");
+		ImGui::ColorPicker3("##prop1", glm::value_ptr(graph.color));
+
+		ImGui::Separator();
+		ImGui::Text("Thickness");
+		ImGui::InputFloat("##prop2", &graph.thickness);
+
+		ImGui::Separator();
+		// equation
+		ImGui::Text("y = ");
+		ImGui::SameLine();
+		ImGui::InputText("##prop3", &graph.equation);
+
+		// submit equation
+		if(ImGui::Button("submit"))
+		{
+			graphManager->SetVariables(graph);
+			graphManager->UpdateVertices(graph, camera->leftBound, camera->rightBound);
+		}
+		// std::cout << graph.equation << std::endl;
+
+		ImGui::Separator();
+		for(auto& [name, value] : graph.variables)
+		{
+			float drag = value;
+			ImGui::Text("%s =", name.c_str());
+			ImGui::SameLine();
+			if(ImGui::DragFloat(("##" + name).c_str(), &drag, 0.01f))
+			{
+				value = drag;
+				graphManager->UpdateVertices(graph, camera->leftBound, camera->rightBound);
+			}
+		}
+
+		if(graph.variables.size() > 0) { ImGui::Separator(); }
+
+		ImGui::Text("Number of vertices %zu", graph.data.size());
 		static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
 		if(ImGui::TreeNode("Vertices"))
 		{
@@ -255,19 +341,17 @@ static inline void PropertiesWindow(GraphManager* graphManager)
 				ImGui::TableSetupColumn("Y");
 
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, 0);
-				for(int dataIndex = 0; dataIndex < graphManager->graphs[graphsHierarchySelected].data.size();
-				    dataIndex += 2)
+				for(size_t dataIndex = 0; dataIndex < graph.data.size(); dataIndex += 2)
 				{
 					ImGui::TableNextRow();
 					for(int column = 0; column < 2; column++)
 					{
 						ImGui::TableSetColumnIndex(column);
 						if(ImGui::InputFloat(("##" + std::to_string(dataIndex + column)).c_str(),
-						                     &graphManager->graphs[graphsHierarchySelected].data[dataIndex + column]),
+						                     &graph.data[dataIndex + column]),
 						   ImGuiWindowFlags_NoDecoration)
 						{
-							graphManager->graphs[graphsHierarchySelected].mesh.Set(
-							    graphManager->graphs[graphsHierarchySelected].data);
+							graph.mesh.Set(graph.data);
 						}
 					}
 				}
@@ -280,13 +364,6 @@ static inline void PropertiesWindow(GraphManager* graphManager)
 	ImGui::End();
 }
 
-void TestingWindow(Renderer* renderer, Camera* camera)
-{
-	ImGui::Begin("Testing Window");
-	ImGui::InputFloat("fov", &camera->fov, 0.0, 0.0, "%.9f");
-	ImGui::InputFloat("spacing", &renderer->gridSpacing, 0.0, 0.0, "%.9f");
-	ImGui::End();
-}
 void UI::Update()
 {
 	StartFrame();
@@ -296,11 +373,11 @@ void UI::Update()
 	ImGui::ShowDemoWindow();
 
 	MainWindow();
-	ViewportWindow(frameBuffer, camera, viewportFocused, viewportMouseX, viewportMouseY);
-	InfoWindow(window, camera, viewportFocused, renderer);
-	Settings(camera, renderer);
-	HierarchyWindow(graphManager);
-	PropertiesWindow(graphManager);
+	ViewportWindow(this);
+	InfoWindow(this);
+	Settings(this);
+	HierarchyWindow(this);
+	PropertiesWindow(this);
 
 	RenderUI();
 }

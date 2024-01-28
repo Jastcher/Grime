@@ -4,6 +4,10 @@
 
 Camera::Camera(int w, int h, float _fov) : width(w), height(h), fov(_fov)
 {
+	aspect = width / (float)height;
+	leftBound = position.x - fov * aspect;
+	rightBound = position.x + fov * aspect;
+	newFov = fov;
 }
 
 glm::mat4 Camera::GetMatrix()
@@ -15,7 +19,7 @@ glm::mat4 Camera::GetMatrix()
 
 glm::mat4 Camera::GetProjection()
 {
-	float aspect = width / (float)height;
+	aspect = width / (float)height;
 	glm::mat4 projection = glm::mat4(1.0f);
 	projection = glm::ortho(-fov * aspect, fov * aspect, -fov, fov, 0.1f, 100.0f);
 	return projection;
@@ -34,6 +38,12 @@ glm::mat4 GetViewForInput()
 	return view;
 }
 
+void Camera::CalculateBounds()
+{
+	// for graph boundaries
+	leftBound = position.x - newFov * aspect;
+	rightBound = position.x + newFov * aspect;
+}
 void Camera::Input(int mouseX, int mouseY)
 {
 

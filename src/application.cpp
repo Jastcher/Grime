@@ -1,17 +1,11 @@
 #include "application.h"
-#include "GLFW/glfw3.h"
-#include "event/event.h"
-#include "glm/ext/quaternion_common.hpp"
-#include "graphManager.h"
-#include <cmath>
-#include <iostream>
 
 void Application::HandleEvent(const Event& e)
 {
 
 	if(e.Type() == ResizeEvent::descriptor)
 	{
-		const ResizeEvent& resizeEvent = static_cast<const ResizeEvent&>(e);
+		// const ResizeEvent& resizeEvent = static_cast<const ResizeEvent&>(e);
 
 		// std::cout << "Window Resized; " << resizeEvent.width << " x " <<
 		// resizeEvent.height << std::endl;
@@ -30,11 +24,16 @@ void Application::HandleEvent(const Event& e)
 	{
 		const MouseMoveEvent& mouseMoveEvent = static_cast<const MouseMoveEvent&>(e);
 
-		// std::cout << "Mouse moved; " << mouseMoveEvent.x << " " <<
-		// mouseMoveEvent.y << std::endl;
+		// std::cout << "Mouse moved; " << mouseMoveEvent.x << " " << mouseMoveEvent.y << std::endl;
 		window->mouseX = mouseMoveEvent.x;
 		window->mouseY = mouseMoveEvent.y;
-		if(window->mouseClicked && ui->viewportFocused) { camera->Input(ui->viewportMouseX, ui->viewportMouseY); }
+		if(window->mouseClicked && ui->viewportFocused)
+		{
+			camera->Input(ui->viewportMouseX, ui->viewportMouseY);
+
+			camera->CalculateBounds();
+			graphManager->UpdateAllGraphVertices(camera->leftBound, camera->rightBound);
+		}
 	}
 	else if(e.Type() == ScrollEvent::descriptor)
 	{
@@ -43,11 +42,15 @@ void Application::HandleEvent(const Event& e)
 		// std::cout << "Mouse scrolled; " << scrollEvent.scrollY << std::endl;
 		if(ui->viewportFocused)
 		{
+
 			camera->fovChangeCounter += scrollEvent.scrollY;
-			// camera->fov -= scrollEvent.scrollY * camera->scrollSpeed * camera->fov;
-			// camera->fov = (camera->fov > 0) ? camera->fov : 0.1f;
 			camera->ChangeFov(camera->fov - scrollEvent.scrollY * camera->scrollSpeed * camera->fov);
 			if(camera->fovChangeCounter % 5 == 0) renderer->gridSpacing = camera->newFov / 10.0f;
+
+			graphManager->boundOffset = glm::max(camera->newFov, 1.0f);
+			camera->CalculateBounds();
+			graphManager->UpdateAllGraphVertices(
+			    camera->leftBound, camera->rightBound, true); // skip bound check, update vertices no matter what
 		}
 	}
 }
@@ -55,40 +58,32 @@ void Application::HandleEvent(const Event& e)
 Application::Application(const Props& winProps)
 {
 
-	dispatcher = new Dispatcher(std::bind(&Application::HandleEvent, this, std::placeholders::_1));
+	dispatcher = std::make_shared<Dispatcher>((std::bind(&Application::HandleEvent, this, std::placeholders::_1)));
 
-	window = new Window(winProps, dispatcher);
+	window = std::make_shared<Window>(winProps, dispatcher);
 	if(!window->Init()) { std::cout << "window failed to init" << std::endl; }
 	window->EnableDepthTest(false);
 
 	glfwWindow = window->window;
 
-	camera = new Camera(window->GetWidth(), window->GetHeight(), 1.0f);
+	camera = std::make_shared<Camera>(window->GetWidth(), window->GetHeight(), 1.0f);
 
-	renderer = new Renderer(camera);
-	frameBuffer = new FrameBuffer(window);
-	graphManager = new GraphManager();
-	ui = new UI(renderer, graphManager, window, frameBuffer, camera);
+	renderer = std::make_shared<Renderer>(camera);
+	frameBuffer = std::make_shared<FrameBuffer>(window);
+	graphManager = std::make_shared<GraphManager>();
+	ui = std::make_shared<UI>(renderer, graphManager, window, frameBuffer, camera);
 }
 
 Application::~Application()
 {
-	delete window;
-	delete renderer;
-	delete ui;
-	delete frameBuffer;
-	delete dispatcher;
-	delete camera;
-	delete graphManager;
-
 	glfwTerminate();
 }
 
 void Application::Run()
 {
-
 	while(!glfwWindowShouldClose(glfwWindow))
 	{
+
 		camera->UpdateFov(window->dt);
 
 		// same size check in method, viewport change in method
@@ -103,10 +98,8 @@ void Application::Run()
 
 		renderer->RenderMainAxes();
 
-		renderer->RenderGraph(camera->width, camera->height);
-
 		// render graphs
-		// for(const auto& graph : graphManager->graphs) { renderer->Render(graph); }
+		for(const auto& graph : graphManager->graphs) { renderer->Render(*graph); }
 
 		frameBuffer->Unbind();
 

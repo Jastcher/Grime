@@ -3,6 +3,7 @@
 #include "GLFW/glfw3.h"
 #include "event/event.h"
 #include <chrono>
+#include <memory>
 
 struct Props
 {
@@ -10,13 +11,13 @@ struct Props
 	unsigned int height = 600;
 	const char* title = "Grime";
 
-	Dispatcher* dispatcher;
+	std::shared_ptr<Dispatcher> dispatcher;
 };
 
 class Window
 {
   public:
-	Window(const Props& properties, Dispatcher* dispatcher);
+	Window(const Props& properties, std::shared_ptr<Dispatcher> dispatcher);
 	~Window();
 
 	bool Init();
@@ -48,7 +49,7 @@ class Window
 	    std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
 	        .count();
 	unsigned long long int now = 0;
-	float dt = 0;
+	float dt = 1 / 165.0f;
 
   private:
 	Props properties;

@@ -23,6 +23,11 @@ class Camera
 	void UpdateFov(float dt);
 
 	int width, height;
+	float aspect;
+
+	void CalculateBounds();
+	float leftBound;
+	float rightBound;
 
 	float fov;
 	float newFov;

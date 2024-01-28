@@ -1,6 +1,6 @@
 #include "frameBuffer.h"
 
-FrameBuffer::FrameBuffer(Window* window) : id(0)
+FrameBuffer::FrameBuffer(std::shared_ptr<Window> window) : id(0)
 {
 	glGenFramebuffers(1, &id);
 	SetSize(window->GetWidth(), window->GetHeight());
