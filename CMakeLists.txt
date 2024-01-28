@@ -7,8 +7,10 @@ set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 
 project(Application VERSION 1.0)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin/)
 
 file(GLOB_RECURSE SRC_FILES src/*.cpp vendor/src/*.cpp)
+
 
 
 add_compile_options(-Wall -Wextra -Wpedantic -g -pg)

@@ -9,12 +9,8 @@ mv compile_commands.json ../
 
 cmake --build .
 
-if [ $1 ] 
-then
-	echo ""
-	echo "Executing"
-	./Application
+if [ $1 ]; then
+	../bin/Application
 fi
 
 cd ..
-
