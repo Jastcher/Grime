@@ -1,3 +1,4 @@
 .cache/
 Build/
 compile_commands.json
+core.*
