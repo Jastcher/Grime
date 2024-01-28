@@ -9,8 +9,9 @@ mv compile_commands.json ../
 
 cmake --build .
 
+cd ../bin/
 if [ $1 ]; then
-	../bin/Application
+	./Application
 fi
 
 cd ..
