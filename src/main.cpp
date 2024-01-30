@@ -1,4 +1,6 @@
 #include "application.h"
+#include "window.h"
+#include <memory>
 
 static int inited = 0;
 void* operator new(size_t size)
@@ -19,11 +21,13 @@ void operator delete(void* memory)
 
 int main()
 {
-	Application* app = new Application({ 1, 1, "Grime" });
+	{
+		std::unique_ptr<Application> app = std::make_unique<Application>(Props { 1, 1, "Grime", nullptr });
 
-	app->Run();
+		app->Run();
+	}
 
-	delete app;
+	std::cout << inited << " " << deleted << std::endl; // 50 memories get freed after main() scope ?????????????? wtf
 
-	std::cout << inited << " " << deleted << std::endl;
+	glfwTerminate(); // cant be in app for some reason
 }

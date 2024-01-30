@@ -125,7 +125,7 @@ static inline void InfoWindow(UI* UI)
 	ImGui::End();
 }
 
-static int themeSelected = 0;
+static int themeSelected = 1; // Moonlight
 static inline void Settings(UI* UI)
 {
 	auto* camera = UI->camera.get();
@@ -230,7 +230,10 @@ static inline void Settings(UI* UI)
 
 	if(ImGui::TreeNode("UI settings"))
 	{
-		ImGui::Text("Themes");
+		ImGui::Columns(2);
+		DUMMYTEXT("Themes")
+		ImGui::NextColumn();
+		ImGui::SetNextItemWidth(-1);
 		if(ImGui::ListBox("##14", &themeSelected, UI->styleNames, 5)) { UI->styleFunctions[themeSelected](); }
 		ImGui::TreePop();
 		ImGui::Columns(1);
@@ -252,29 +255,26 @@ static inline void HierarchyWindow(UI* UI)
 	}
 	ImGui::Separator();
 
-	if(graphManager->graphNames.size() > 0)
-	{
-		for(size_t i = 0; i < graphManager->graphs.size(); i++)
-		{
-			if(ImGui::Selectable((graphManager->graphs[i]->name + "##" + std::to_string(i)).c_str(),
-			                     i == graphsHierarchySelected))
-			{
-				graphsHierarchySelected = i;
-			}
-		}
-	}
+	if(graphManager->graphs.size() == 0) { graphsHierarchySelected = -1; }
 
-	// temp
-	if(0)
+	for(size_t i = 0; i < graphManager->graphs.size(); i++)
 	{
-		auto dir =
-		    pfd::open_file("select folder containing two columns of data", "/home/jastcher/Programming/c++/Grime/res/")
-		        .result();
-		std::cout << "opening file: ";
-		for(auto& i : dir) { std::cout << i; }
-		std::cout << std::endl;
-		graphManager->LoadGraphCVT(dir[0].c_str());
-		std::cout << "LOADED" << std::endl;
+		std::string label = graphManager->graphs[i]->name;
+		if(ImGui::Selectable((label + "##" + std::to_string(i)).c_str(),
+		                     (int)i == graphsHierarchySelected,
+		                     0,
+		                     ImVec2(ImGui::GetWindowWidth() - 69, 0.0))) // nice
+		{
+			graphsHierarchySelected = i;
+		}
+		ImGui::SameLine(ImGui::GetWindowWidth() - 55);
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);
+		if(ImGui::Button(("x##" + std::to_string(i)).c_str()))
+		{
+			graphManager->DeleteGraph(i);
+			if((int)i < graphsHierarchySelected || graphsHierarchySelected == (int)graphManager->graphs.size())
+				graphsHierarchySelected -= 1;
+		}
 	}
 
 	ImGui::End();

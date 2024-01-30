@@ -32,13 +32,16 @@ class UI
 
 	void Update();
 
+	// if mouse is hovering the viewport
 	bool viewportFocused;
+
+	// viewport mouse coords
 	int viewportMouseX, viewportMouseY;
 
+	// themes
 	void (*(styleFunctions[5]))() { CleanDarkRed, Moonlight, VisualStudio, Unreal, DeepDark };
 	const char* styleNames[5] { "Clean dark red", "Moonlight", "Visual Studio", "Unreal", "Deep Dark" };
-	ImFont* pFont;
-	std::unordered_map<std::string, void (*)(void)> styles;
+
 	std::shared_ptr<Renderer> renderer;
 	std::shared_ptr<GraphManager> graphManager;
 	std::shared_ptr<Window> window;

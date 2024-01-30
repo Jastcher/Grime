@@ -28,6 +28,12 @@ GraphManager::~GraphManager()
 	for(auto& graph : graphs) { delete graph; }
 }
 
+void GraphManager::DeleteGraph(unsigned int index)
+{
+	graphs.erase(graphs.begin() + index);
+	UpdateNames();
+}
+
 void GraphManager::AddGraph(Graph* graph)
 {
 	graphs.push_back(graph);
@@ -117,34 +123,6 @@ bool GraphManager::UpdateVertices(Graph& graph, float leftBound, float rightBoun
 	}
 
 	graph.SetData(vertices);
-
-	return 1;
-}
-
-bool GraphManager::LoadGraphCVT(const char* path)
-{
-	std::ifstream file(path);
-	if(!file.is_open())
-	{
-		std::cerr << "iledto open the file" << std::endl;
-		return 0;
-	}
-
-	std::vector<float> data; // Vector to store x, y pairs
-
-	float x, y;
-	while(file >> x >> y)
-	{
-		data.push_back(x);
-		data.push_back(y);
-	}
-
-	file.close();
-
-	Graph graph("New loaded graph");
-	graph.SetData(data);
-
-	// AddGraph(graph);
 
 	return 1;
 }

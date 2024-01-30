@@ -26,7 +26,6 @@ class Application
 	std::shared_ptr<Window> window;
 	std::shared_ptr<Camera> camera;
 	std::shared_ptr<GraphManager> graphManager;
-
 	std::shared_ptr<Renderer> renderer;
 	std::shared_ptr<FrameBuffer> frameBuffer;
 	std::shared_ptr<UI> ui;

@@ -113,7 +113,7 @@ void CleanDarkRed()
 
 void Moonlight()
 {
-	// Moonlight style by Madam-Herta from ImThemes
+	// Moonlight style by Madam-Herta from ImThemes MODIFIED
 	ImGuiStyle& style = ImGui::GetStyle();
 
 	style.Alpha = 1.0f;

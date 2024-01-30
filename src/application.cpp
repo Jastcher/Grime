@@ -76,7 +76,6 @@ Application::Application(const Props& winProps)
 
 Application::~Application()
 {
-	glfwTerminate();
 }
 
 void Application::Run()

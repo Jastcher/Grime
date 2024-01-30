@@ -11,7 +11,7 @@ class Camera
   public:
 	Camera(int w, int h, float fov);
 
-	void Input(int, int);
+	void Input(int mouseX, int mouseY);
 
 	glm::vec2 position = glm::vec2(0.0f);
 
