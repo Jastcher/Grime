@@ -1,7 +1,7 @@
 
 # Grime
 
-[Imgur](https://i.imgur.com/MHlEHl0.png)
+![Imgur](https://i.imgur.com/MHlEHl0.png)
 Grime is a graph generator and renderer inspired by Desmos graphing tool.
 
 ## Build
