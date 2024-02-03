@@ -11,7 +11,7 @@ cmake --build .
 
 cd ../bin/
 if [ $1 ]; then
-	./Application
+	./Grime
 fi
 
 cd ..

@@ -6,15 +6,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 
-project(Application VERSION 1.0)
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin/)
+project(Grime VERSION 1.0)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin/)
 
 file(GLOB_RECURSE SRC_FILES src/*.cpp vendor/src/*.cpp)
 
-
-
-add_compile_options(-Wall -Wextra -Wpedantic -g -pg)
-add_executable(Application ${SRC_FILES})
-target_include_directories(Application PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/vendor/include ${CMAKE_CURRENT_SOURCE_DIR}/vendor/include/imgui)
-TARGET_LINK_LIBRARIES(Application ${CMAKE_CURRENT_SOURCE_DIR}/vendor/lib/libglfw3.a X11 GL)
+add_compile_options(-Wall -Wextra -Wpedantic)
+add_executable(Grime ${SRC_FILES})
+target_include_directories(Grime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/vendor/include ${CMAKE_CURRENT_SOURCE_DIR}/vendor/include/imgui)
+TARGET_LINK_LIBRARIES(Grime ${CMAKE_CURRENT_SOURCE_DIR}/vendor/lib/libglfw3.a X11 GL)
 
