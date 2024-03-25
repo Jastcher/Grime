@@ -1,4 +1,5 @@
 #include "window.h"
+#include "GLFW/glfw3.h"
 #include "event/event.h"
 #include <GL/gl.h>
 #include <iostream>
@@ -101,6 +102,7 @@ void Window::Clear()
 
 void Window::Update()
 {
+	time = glfwGetTime();
 	// update time
 	now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())
 	          .count();

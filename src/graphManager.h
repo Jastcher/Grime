@@ -20,6 +20,7 @@ class GraphManager
 	void UpdateNames();
 
 	void SetVariables(Graph& graph);
+	void AddVariables(Graph& graph);
 	bool UpdateVertices(Graph& graph, float leftBound, float rightBound);
 	bool UpdateAllGraphVertices(float leftBound, float rightBound, bool skipCheck = false);
 

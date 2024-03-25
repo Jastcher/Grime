@@ -1,4 +1,5 @@
 #include "application.h"
+#include "graph.h"
 
 void Application::HandleEvent(const Event& e)
 {
@@ -68,7 +69,7 @@ Application::Application(const Props& winProps)
 
 	camera = std::make_shared<Camera>(window->GetWidth(), window->GetHeight(), 1.0f);
 
-	renderer = std::make_shared<Renderer>(camera);
+	renderer = std::make_shared<Renderer>(camera, window);
 	frameBuffer = std::make_shared<FrameBuffer>(window);
 	graphManager = std::make_shared<GraphManager>();
 	ui = std::make_shared<UI>(renderer, graphManager, window, frameBuffer, camera);
@@ -98,7 +99,13 @@ void Application::Run()
 		renderer->RenderMainAxes();
 
 		// render graphs
-		for(const auto& graph : graphManager->graphs) { renderer->Render(*graph); }
+		for(const auto& graph : graphManager->graphs)
+		{
+			if(graph->mode == CalcMode::GPU)
+				renderer->RenderGPU(*graph);
+			else
+				renderer->Render(*graph);
+		}
 
 		frameBuffer->Unbind();
 

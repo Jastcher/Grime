@@ -6,14 +6,16 @@
 #include "mesh.h"
 #include "shader.h"
 #include <memory>
+#include "window.h"
 
 class Renderer
 {
   public:
-	Renderer(std::shared_ptr<Camera> camera);
+	Renderer(std::shared_ptr<Camera> cam, std::shared_ptr<Window> win);
 
 	void Render();
 	void Render(const Graph& graph);
+	void RenderGPU(Graph& graph);
 	void RenderGrid();
 	void RenderMainAxes();
 
@@ -36,6 +38,7 @@ class Renderer
 
   private:
 	std::shared_ptr<Camera> camera;
+	std::shared_ptr<Window> window;
 
 	Shader shader = Shader("/home/jastcher/Programming/c++/Grime/src/shader/default.shader");
 	Shader instanceShader = Shader("/home/jastcher/Programming/c++/Grime/src/shader/instance.shader");

@@ -4,6 +4,7 @@
 #include "graph.h"
 #include "graphManager.h"
 #include "imgui.h"
+#include "imgui_stdlib.h"
 #include "pfd/portable-file-dialogs.h"
 #include "renderer.h"
 #include <string>
@@ -112,6 +113,7 @@ static inline void InfoWindow(UI* UI)
 	auto* window = UI->window.get();
 
 	ImGui::Begin("Info");
+	ImGui::Text("time%f ", window->time);
 	ImGui::Text("Camera bounds %f ; %f", camera->leftBound, camera->rightBound);
 	ImGui::Text("Window size: %d x %d", window->GetWidth(), window->GetHeight());
 	ImGui::Text("Camera size: %d x %d", camera->width, camera->height);
@@ -248,11 +250,52 @@ static inline void HierarchyWindow(UI* UI)
 
 	ImGui::Begin("Hierarchy");
 
-	if(ImGui::Button("Add New Graph", ImVec2(-1.0f, 40.0f)))
+	std::string eq = "Null";
+
+	// if button clicked open popup
+	if(ImGui::Button("Add New Graph", ImVec2(-1.0f, 40.0f))) { ImGui::OpenPopup("Default_selection"); }
+
+	if(ImGui::BeginPopup("Default_selection"))
 	{
-		Graph* newGraph = new Graph("New graph");
+		ImGui::SeparatorText("Select Preset");
+
+		if(ImGui::Selectable("Empty")) eq = "";
+
+		if(ImGui::BeginMenu("Shapes"))
+		{
+			if(ImGui::Selectable("Circle")) eq = "pow((x-n), 2) + pow((y-m), 2) = pow(r,2)";
+			if(ImGui::Selectable("Ellipse")) eq = "(pow(x-h,2))/pow(b,2) + (pow(y-v,2))/pow(a,2) = 1";
+			ImGui::EndMenu();
+		}
+
+		if(ImGui::BeginMenu("Functions"))
+		{
+			if(ImGui::Selectable("Linear")) eq = "y = k * x + q";
+			if(ImGui::Selectable("Quadratic")) eq = "y = pow(x,2)";
+			if(ImGui::Selectable("Cubic")) eq = "y = pow(x,3)";
+			if(ImGui::Selectable("Exponential")) eq = "y = exp(x)";
+			if(ImGui::Selectable("Logarithmic")) eq = "y = log(x)";
+			if(ImGui::Selectable("Square root")) eq = "y = sqrt(x)";
+			if(ImGui::Selectable("Sine")) eq = "y = sin(x)";
+			if(ImGui::Selectable("Cosine")) eq = "y = cos(x)";
+			if(ImGui::Selectable("Tangent")) eq = "y = tan(x)";
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	if(eq != "Null")
+	{
+		Graph* newGraph = new Graph("New graph", eq);
+		if(eq != "")
+		{
+			graphManager->AddVariables(*newGraph);
+			newGraph->SetShader(eq);
+		}
 		graphManager->AddGraph(newGraph);
 	}
+
 	ImGui::Separator();
 
 	if(graphManager->graphs.size() == 0) { graphsHierarchySelected = -1; }
@@ -280,6 +323,7 @@ static inline void HierarchyWindow(UI* UI)
 	ImGui::End();
 }
 
+static std::string errorOut;
 static inline void PropertiesWindow(UI* UI)
 {
 	auto* camera = UI->camera.get();
@@ -290,6 +334,7 @@ static inline void PropertiesWindow(UI* UI)
 	{
 		auto& graph = *graphManager->graphs[graphsHierarchySelected];
 
+		ImGui::PushItemWidth(-1);
 		ImGui::Text("Name");
 		ImGui::InputText("##prop0", &graph.name);
 
@@ -299,20 +344,57 @@ static inline void PropertiesWindow(UI* UI)
 
 		ImGui::Separator();
 		ImGui::Text("Thickness");
-		ImGui::InputFloat("##prop2", &graph.thickness);
+		if(ImGui::DragFloat("##prop2", &graph.thickness, camera->fov))
+			graph.thickness = glm::max(graph.thickness, 0.0f);
 
 		ImGui::Separator();
+		if(ImGui::BeginTabBar(("Calc Mode##" + std::to_string(graphsHierarchySelected)).c_str()))
+		{
+			if(ImGui::BeginTabItem("GPU"))
+			{
+				graph.mode = CalcMode::GPU;
+				ImGui::Text("f: ");
+				ImGui::SameLine();
+				ImGui::InputTextMultiline("##prop3", &graph.equation);
+
+				if(ImGui::Button("submit"))
+				{
+					graph.data.clear();
+					graphManager->AddVariables(graph);
+					errorOut = graph.SetShader(graph.equation);
+					if(errorOut != "") ImGui::OpenPopup("ShaderError");
+				}
+				if(ImGui::BeginPopupModal("ShaderError", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					ImGui::Text("No error? %s", errorOut.c_str());
+
+					if(ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+
+					ImGui::EndPopup();
+				}
+
+				ImGui::EndTabItem();
+			}
+			if(ImGui::BeginTabItem("CPU"))
+			{
+				graph.mode = CalcMode::CPU;
+				ImGui::Text("y = ");
+				ImGui::SameLine();
+				ImGui::InputTextMultiline("##prop4", &graph.equation);
+
+				if(ImGui::Button("submit"))
+				{
+					graphManager->SetVariables(graph);
+					graphManager->UpdateVertices(graph, camera->leftBound, camera->rightBound);
+				}
+
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
 		// equation
-		ImGui::Text("y = ");
-		ImGui::SameLine();
-		ImGui::InputText("##prop3", &graph.equation);
 
 		// submit equation
-		if(ImGui::Button("submit"))
-		{
-			graphManager->SetVariables(graph);
-			graphManager->UpdateVertices(graph, camera->leftBound, camera->rightBound);
-		}
 		// std::cout << graph.equation << std::endl;
 
 		ImGui::Separator();
@@ -330,35 +412,38 @@ static inline void PropertiesWindow(UI* UI)
 
 		if(graph.variables.size() > 0) { ImGui::Separator(); }
 
-		ImGui::Text("Number of vertices %zu", graph.data.size());
-		static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
-		if(ImGui::TreeNode("Vertices"))
+		if(graph.mode == CalcMode::CPU)
 		{
-
-			if(ImGui::BeginTable("table1", 2, flags))
+			ImGui::Text("Number of vertices %zu", graph.data.size());
+			static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
+			if(ImGui::TreeNode("Vertices"))
 			{
-				ImGui::TableSetupColumn("X");
-				ImGui::TableSetupColumn("Y");
 
-				ImGui::PushStyleColor(ImGuiCol_FrameBg, 0);
-				for(size_t dataIndex = 0; dataIndex < graph.data.size(); dataIndex += 2)
+				if(ImGui::BeginTable("table1", 2, flags))
 				{
-					ImGui::TableNextRow();
-					for(int column = 0; column < 2; column++)
+					ImGui::TableSetupColumn("X");
+					ImGui::TableSetupColumn("Y");
+
+					ImGui::PushStyleColor(ImGuiCol_FrameBg, 0);
+					for(size_t dataIndex = 0; dataIndex < graph.data.size(); dataIndex += 2)
 					{
-						ImGui::TableSetColumnIndex(column);
-						if(ImGui::InputFloat(("##" + std::to_string(dataIndex + column)).c_str(),
-						                     &graph.data[dataIndex + column]),
-						   ImGuiWindowFlags_NoDecoration)
+						ImGui::TableNextRow();
+						for(int column = 0; column < 2; column++)
 						{
-							graph.mesh.Set(graph.data);
+							ImGui::TableSetColumnIndex(column);
+							if(ImGui::InputFloat(("##" + std::to_string(dataIndex + column)).c_str(),
+							                     &graph.data[dataIndex + column]),
+							   ImGuiWindowFlags_NoDecoration)
+							{
+								graph.mesh.Set(graph.data);
+							}
 						}
 					}
+					ImGui::EndTable();
 				}
-				ImGui::EndTable();
+				ImGui::PopStyleColor();
+				ImGui::TreePop();
 			}
-			ImGui::PopStyleColor();
-			ImGui::TreePop();
 		}
 	}
 	ImGui::End();
@@ -370,7 +455,7 @@ void UI::Update()
 
 	ImGui::SetNextWindowSize(ImVec2(window->GetWidth(), window->GetHeight()));
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
-	// ImGui::ShowDemoWindow();
+	ImGui::ShowDemoWindow();
 
 	MainWindow();
 	ViewportWindow(this);

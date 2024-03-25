@@ -6,25 +6,24 @@
 #include <string>
 #include <unordered_map>
 #include "tinyexpr/tinyexpr.h"
+#include "shader.h"
+
+enum class CalcMode
+{
+	CPU = 0,
+	GPU,
+};
 
 class Graph
 {
   public:
-	Graph(const char* _name) : name(_name)
-	{
-		name.reserve(16);
-		mesh.Set(data);
+	Graph(const char* _name, const std::string& _equation = "");
 
-		equation.reserve(16);
-	}
+	~Graph();
 
-	~Graph() {}
+	void SetData(const std::vector<float>& _data);
 
-	void SetData(const std::vector<float>& _data)
-	{
-		data = _data;
-		mesh.Set(data);
-	}
+	const std::string SetShader(std::string eq);
 
 	std::string name;
 	glm::vec3 color = glm::vec3(1.0f);
@@ -36,7 +35,14 @@ class Graph
 	std::unordered_map<std::string, double> variables;
 
 	std::string equation;
+
+	CalcMode mode = CalcMode::GPU;
+
+	// CPU rendering
 	te_parser parser;
+
+	// GPU rendering
+	Shader shader;
 
 	float increment = 0.1f;
 	float leftMostX = 0.0f;

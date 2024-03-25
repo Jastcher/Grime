@@ -44,6 +44,7 @@ class Window
 
 	GLFWwindow* window;
 
+	double time;
 	// time
 	unsigned long long int prev =
 	    std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())

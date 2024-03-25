@@ -1,4 +1,6 @@
 #include "renderer.h"
+#include "glm/ext/quaternion_common.hpp"
+#include "glm/matrix.hpp"
 #include "graph.h"
 #include <cmath>
 
@@ -10,11 +12,29 @@ template<class T> std::ostream& operator<<(std::ostream& os, const std::vector<T
 	return os;
 }
 
-Renderer::Renderer(std::shared_ptr<Camera> cam) : camera(cam)
+Renderer::Renderer(std::shared_ptr<Camera> cam, std::shared_ptr<Window> win) : camera(cam), window(win)
 {
 	glGenVertexArrays(1, &lonelyVao);
 }
 
+void Renderer::RenderGPU(Graph& graph)
+{
+	graph.shader.Activate();
+	graph.shader.SetVec3("graphColor", graph.color);
+	graph.shader.SetFloat("thickness", graph.thickness);
+	graph.shader.SetVec2("resolution", glm::vec2(camera->width, camera->height));
+	graph.shader.SetFloat("fov", camera->fov);
+	graph.shader.SetVec2("translation", camera->position);
+	graph.shader.SetMat4("view", (camera->GetView()));
+	graph.shader.SetMat4("proj", (camera->GetProjection()));
+
+	graph.shader.SetFloat("time", window->time);
+
+	for(const auto& var : graph.variables) { graph.shader.SetFloat(var.first.c_str(), var.second); }
+
+	glBindVertexArray(lonelyVao);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
 void Renderer::Render(const Graph& graph)
 {
 	shader.Activate();

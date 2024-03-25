@@ -1,4 +1,5 @@
 #include "graphManager.h"
+#include "graph.h"
 
 static std::set<char> GetExprVariables(std::string input)
 {
@@ -48,17 +49,21 @@ void GraphManager::UpdateNames()
 	for(const auto& graph : graphs) { graphNames.push_back((graph->name.c_str())); }
 }
 
-void GraphManager::SetVariables(Graph& graph)
+void GraphManager::AddVariables(Graph& graph)
 {
-
-	std::set<te_variable> varSet { { "x", &x } };
-
 	auto varList = GetExprVariables(graph.equation);
 	for(auto var : varList)
 	{
-		if(var == 'x') continue;
+		if(var == 'x' || var == 'y') continue;
 		graph.variables[std::string(1, var)];
 	}
+}
+
+void GraphManager::SetVariables(Graph& graph)
+{
+	std::set<te_variable> varSet { { "x", &x } };
+
+	AddVariables(graph);
 
 	for(auto& pair : graph.variables) { varSet.insert({ pair.first, &pair.second }); }
 
@@ -75,6 +80,7 @@ bool GraphManager::UpdateAllGraphVertices(float leftBound, float rightBound, boo
 	for(auto* graph : graphs)
 	// for(std::vector<Graph*>::iterator it = graphs.begin(); it != graphs.end(); ++it)
 	{
+		if(graph->mode == CalcMode::GPU) continue;
 		if((graph->leftMostX < leftBound && graph->rightMostX > rightBound) && !skipCheck) { continue; };
 		newGraphs.push_back(graph);
 	}
