@@ -455,7 +455,7 @@ void UI::Update()
 
 	ImGui::SetNextWindowSize(ImVec2(window->GetWidth(), window->GetHeight()));
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 
 	MainWindow();
 	ViewportWindow(this);

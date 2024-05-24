@@ -40,9 +40,9 @@ class Renderer
 	std::shared_ptr<Camera> camera;
 	std::shared_ptr<Window> window;
 
-	Shader shader = Shader("/home/jastcher/Programming/c++/Grime/src/shader/default.shader");
-	Shader instanceShader = Shader("/home/jastcher/Programming/c++/Grime/src/shader/instance.shader");
-	Shader gridShader = Shader("/home/jastcher/Programming/c++/Grime/src/shader/grid.shader");
-	Shader axisShader = Shader("/home/jastcher/Programming/c++/Grime/src/shader/mainAxis.shader");
-	Shader graphShader = Shader("/home/jastcher/Programming/c++/Grime/src/shader/graph.shader");
+	Shader shader = Shader("../src/shader/default.shader");
+	Shader instanceShader = Shader("../src/shader/instance.shader");
+	Shader gridShader = Shader("../src/shader/grid.shader");
+	Shader axisShader = Shader("../src/shader/mainAxis.shader");
+	Shader graphShader = Shader("../src/shader/graph.shader");
 };
